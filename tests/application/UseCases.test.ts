@@ -114,7 +114,7 @@ describe('Application Services & Use Cases', () => {
   });
 
   describe('DepositFundsService (Pessimistic Lock & Idempotency)', () => {
-    it('should deposit funds and publish wallet.funds-deposited event', async () => {
+    it('should deposit funds and publish wallet.funds-deposited event with user details', async () => {
       const account = await createService.execute({ userId: 'usr_200', currency: 'COP' });
 
       const result = await depositService.execute({
@@ -122,6 +122,8 @@ describe('Application Services & Use Cases', () => {
         amount: 50000,
         idempotencyKey: 'idem-key-1',
         reference: 'deposit-ref-001',
+        name: 'Carlos Ruiz',
+        email: 'carlos@example.com',
       });
 
       expect(result.duplicate).toBe(false);
@@ -129,6 +131,8 @@ describe('Application Services & Use Cases', () => {
       expect(publisher.publishedFundsDeposited).toHaveLength(1);
       expect(publisher.publishedFundsDeposited[0].payload.amount).toBe('50000');
       expect(publisher.publishedFundsDeposited[0].payload.currency).toBe('COP');
+      expect(publisher.publishedFundsDeposited[0].payload.name).toBe('Carlos Ruiz');
+      expect(publisher.publishedFundsDeposited[0].payload.email).toBe('carlos@example.com');
     });
 
     it('should handle idempotent duplicate requests without re-crediting or re-publishing', async () => {

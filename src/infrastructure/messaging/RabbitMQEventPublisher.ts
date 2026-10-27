@@ -102,6 +102,7 @@ export class RabbitMQEventPublisher implements EventPublisherPort {
     const channel = await this.getChannel();
     const content = Buffer.from(JSON.stringify(event));
 
+    // Primary topic routing key
     channel.publish(this.exchange, 'wallet.funds-deposited', content, {
       contentType: 'application/json',
       persistent: true,
@@ -109,7 +110,15 @@ export class RabbitMQEventPublisher implements EventPublisherPort {
       type: event.eventName,
     });
 
-    console.log(`[RabbitMQ] Published event '${event.eventName}' to exchange '${this.exchange}' [RoutingKey: wallet.funds-deposited]`);
+    // Also publish to user.funds-deposited so queues bound to user.# receive it
+    channel.publish(this.exchange, 'user.funds-deposited', content, {
+      contentType: 'application/json',
+      persistent: true,
+      timestamp: Date.now(),
+      type: event.eventName,
+    });
+
+    console.log(`[RabbitMQ] Published event '${event.eventName}' to exchange '${this.exchange}' [RoutingKeys: wallet.funds-deposited, user.funds-deposited]`);
   }
 
   public async close(): Promise<void> {

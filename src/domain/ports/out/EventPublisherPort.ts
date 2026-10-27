@@ -18,6 +18,8 @@ export interface FundsDepositedEventPayload {
   amount: string;
   currency: string;
   reference?: string;
+  name?: string;
+  email?: string;
 }
 
 export interface EventPublisherPort {

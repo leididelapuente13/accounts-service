@@ -117,6 +117,16 @@ const options: swaggerJsdoc.Options = {
               description: 'Optional external deposit reference or payment receipt ID.',
               example: 'deposit-ref-123',
             },
+            name: {
+              type: 'string',
+              description: 'Optional user display name for email notification.',
+              example: 'Carlos Ruiz',
+            },
+            email: {
+              type: 'string',
+              description: 'Optional recipient email for deposit notification.',
+              example: 'carlos@example.com',
+            },
           },
         },
         DepositResponse: {
